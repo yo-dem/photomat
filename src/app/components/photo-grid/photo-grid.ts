@@ -1,5 +1,10 @@
 import { Component, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 import { PhotoService } from '../../services/photo.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-photo-grid',
@@ -9,7 +14,16 @@ import { PhotoService } from '../../services/photo.service';
 })
 export class PhotoGrid {
   protected readonly photoService = inject(PhotoService);
-  private readonly fileInput = viewChild.required<ElementRef<HTMLInputElement>>('fileInput');
+  protected readonly themeService = inject(ThemeService);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
+
+  protected readonly editMode = toSignal(
+    this.route.data.pipe(map(d => !!d['editMode'])),
+    { initialValue: false },
+  );
 
   protected readonly selectedIndex = signal<number | null>(null);
   protected readonly dragIndex = signal<number | null>(null);
@@ -52,8 +66,17 @@ export class PhotoGrid {
     if (e.key === 'ArrowLeft') this.navigate(-1);
   }
 
+  goToLogin(): void {
+    this.router.navigateByUrl('/login');
+  }
+
+  logout(): void {
+    this.auth.logout();
+    this.router.navigateByUrl('/');
+  }
+
   onDragStart(index: number, event: DragEvent): void {
-    if (!this.photoService.displaySlots()[index]) return;
+    if (!this.editMode() || !this.photoService.displaySlots()[index]) return;
     this.dragIndex.set(index);
     event.dataTransfer!.effectAllowed = 'move';
   }
@@ -88,7 +111,7 @@ export class PhotoGrid {
   }
 
   triggerUpload(): void {
-    this.fileInput().nativeElement.click();
+    this.fileInput()?.nativeElement.click();
   }
 
   onFileSelected(event: Event): void {

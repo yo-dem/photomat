@@ -1,0 +1,84 @@
+<div class="login-page">
+
+  <!-- ── Pannello brand (sx) ── -->
+  <div class="brand-panel">
+    <div class="brand-wordmark">
+      <span class="brand-top">PHOTO</span>
+      <span class="brand-bot">MAT</span>
+    </div>
+    <p class="brand-tagline">Archivio fotografico personale</p>
+    <div class="brand-rule"></div>
+  </div>
+
+  <!-- ── Pannello form (dx) ── -->
+  <div class="form-panel">
+    <button class="theme-toggle" (click)="themeService.cycle()" [attr.aria-label]="'Tema: ' + themeService.theme()">
+      @switch (themeService.theme()) {
+        @case ('default') {
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none" />
+          </svg>
+        }
+        @case ('modern') {
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+          </svg>
+        }
+        @case ('retro') {
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="4 17 10 11 4 5" />
+            <line x1="12" y1="19" x2="20" y2="19" />
+          </svg>
+        }
+      }
+    </button>
+
+    <div class="form-inner">
+      <h2 class="form-heading">Accesso</h2>
+      <p class="form-sub">Area riservata all'amministratore</p>
+
+      <form class="login-form" (ngSubmit)="submit()">
+        <div class="field">
+          <label for="username">Username</label>
+          <input
+            id="username"
+            type="text"
+            autocomplete="username"
+            [ngModel]="username()"
+            (ngModelChange)="username.set($event)"
+            name="username"
+            [disabled]="loading()" />
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            autocomplete="current-password"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+            name="password"
+            [disabled]="loading()" />
+        </div>
+
+        @if (error()) {
+          <p class="error-msg">{{ error() }}</p>
+        }
+
+        <button type="submit" class="submit-btn" [disabled]="loading()">
+          @if (loading()) {
+            <span class="spinner"></span>
+          } @else {
+            Accedi
+          }
+        </button>
+      </form>
+    </div>
+  </div>
+
+</div>

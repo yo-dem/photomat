@@ -6,6 +6,135 @@
   padding: 0;
 }
 
+/* ═══════════════════════════════════════════
+   DARKROOM  (default)
+   Caldi near-black, ambra, feel da camera oscura
+   ═══════════════════════════════════════════ */
+:root {
+  --bg:              #110d0a;
+  --surface:         #1a1410;
+  --surface-empty:   #140f0c;
+  --surface-drop:    #261b12;
+  --mat:             #261b12;       /* colore cornice mat attorno alle foto */
+  --border:          rgba(196, 112, 58, 0.12);
+  --border-focus:    rgba(196, 112, 58, 0.7);
+  --text:            #e0d5c3;
+  --text-muted:      #7a6652;
+  --accent:          #c4703a;
+  --error:           #d45a3a;
+  --nav-bg:          #0d0a07;
+  --nav-border:      rgba(196, 112, 58, 0.18);
+  --nav-blur:        none;
+  --cell-radius:     0px;
+  --cell-gap:        3px;
+  --cell-mat:        4px;          /* padding del "mat" fotografico */
+  --font-ui:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --btn-hover:       rgba(196, 112, 58, 0.1);
+  --input-bg:        #1a1410;
+  --input-border:    rgba(196, 112, 58, 0.2);
+  --input-focus:     rgba(196, 112, 58, 0.55);
+  --submit-bg:       #c4703a;
+  --submit-text:     #fff8f0;
+  --submit-hover:    #d47f49;
+  --logo-top-size:   8px;
+  --logo-top-color:  #7a6652;
+  --logo-bot-size:   22px;
+  --logo-bot-weight: 800;
+  --logo-bot-color:  #c4703a;
+  --glow-text:       none;
+  --glow-border:     none;
+}
+
+/* ═══════════════════════════════════════════
+   GALERIE  (modern) — tema chiaro
+   Stampe fotografiche su tavolo, luce di galleria
+   ═══════════════════════════════════════════ */
+[data-theme='modern'] {
+  --bg:              #f0ece5;
+  --surface:         #e6e0d8;
+  --surface-empty:   #ebe6de;
+  --surface-drop:    rgba(26, 22, 18, 0.05);
+  --mat:             #d8d0c4;       /* cornice mat chiara */
+  --border:          rgba(26, 22, 18, 0.1);
+  --border-focus:    rgba(26, 22, 18, 0.5);
+  --text:            #1a1612;
+  --text-muted:      #7a7060;
+  --accent:          #1a1612;
+  --error:           #b84030;
+  --nav-bg:          rgba(240, 236, 229, 0.84);
+  --nav-border:      rgba(26, 22, 18, 0.1);
+  --nav-blur:        blur(18px) saturate(1.4);
+  --cell-radius:     2px;
+  --cell-gap:        5px;
+  --cell-mat:        6px;
+  --font-ui:         'Inter', -apple-system, sans-serif;
+  --btn-hover:       rgba(26, 22, 18, 0.07);
+  --input-bg:        rgba(255, 253, 249, 0.8);
+  --input-border:    rgba(26, 22, 18, 0.15);
+  --input-focus:     rgba(26, 22, 18, 0.4);
+  --submit-bg:       #1a1612;
+  --submit-text:     #f0ece5;
+  --submit-hover:    #2e2820;
+  --logo-top-size:   7px;
+  --logo-top-color:  #7a7060;
+  --logo-bot-size:   20px;
+  --logo-bot-weight: 300;
+  --logo-bot-color:  #1a1612;
+  --glow-text:       none;
+  --glow-border:     none;
+}
+
+/* ═══════════════════════════════════════════
+   TERMINAL  (retro) — fosfori verdi
+   ═══════════════════════════════════════════ */
+[data-theme='retro'] {
+  --bg:              #000900;
+  --surface:         #000e00;
+  --surface-empty:   #000600;
+  --surface-drop:    rgba(0, 255, 65, 0.06);
+  --mat:             #000900;
+  --border:          rgba(0, 255, 65, 0.18);
+  --border-focus:    rgba(0, 255, 65, 0.75);
+  --text:            #00ff41;
+  --text-muted:      #007f20;
+  --accent:          #00ff41;
+  --error:           #ff4444;
+  --nav-bg:          #000900;
+  --nav-border:      rgba(0, 255, 65, 0.35);
+  --nav-blur:        none;
+  --cell-radius:     0px;
+  --cell-gap:        2px;
+  --cell-mat:        0px;          /* no mat nel tema terminale */
+  --font-ui:         'VT323', 'Courier New', monospace;
+  --btn-hover:       rgba(0, 255, 65, 0.1);
+  --input-bg:        #000900;
+  --input-border:    rgba(0, 255, 65, 0.25);
+  --input-focus:     rgba(0, 255, 65, 0.6);
+  --submit-bg:       transparent;
+  --submit-text:     #00ff41;
+  --submit-hover:    rgba(0, 255, 65, 0.1);
+  --logo-top-size:   0px;          /* nascosto in retro (inline logo) */
+  --logo-top-color:  #00ff41;
+  --logo-bot-size:   20px;
+  --logo-bot-weight: 400;
+  --logo-bot-color:  #00ff41;
+  --glow-text:       0 0 6px currentColor;
+  --glow-border:     0 0 8px rgba(0, 255, 65, 0.3);
+}
+
 body {
-  background: #000;
+  background: var(--bg);
+  font-family: var(--font-ui);
+  color: var(--text);
+}
+
+/* ── Animazioni condivise ── */
+@keyframes crt-flicker {
+  0%, 89%, 91%, 100% { opacity: 1; }
+  90%                { opacity: 0.96; }
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
 }
