@@ -11,6 +11,40 @@
   <input #fileInput type="file" accept="image/*" hidden (change)="onFileSelected($event)" />
 </header>
 
+@if (selectedPhoto) {
+  <div class="lightbox-overlay" (click)="closePhoto()">
+    <button class="lightbox-close" (click)="closePhoto()" aria-label="Chiudi">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+
+    @if (photoService.photos().length > 1) {
+      <button class="lightbox-nav lightbox-prev" (click)="$event.stopPropagation(); navigate(-1)" aria-label="Precedente">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+    }
+
+    <div class="lightbox-content" (click)="$event.stopPropagation()">
+      <img class="lightbox-img" [src]="selectedPhoto.dataUrl" [alt]="selectedPhoto.name" />
+      <p class="lightbox-caption">{{ selectedPhoto.name }}</p>
+    </div>
+
+    @if (photoService.photos().length > 1) {
+      <button class="lightbox-nav lightbox-next" (click)="$event.stopPropagation(); navigate(1)" aria-label="Successiva">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+    }
+  </div>
+}
+
 @if (photoService.photos().length === 0) {
   <div class="empty-state">
     <svg xmlns="http://www.w3.org/2000/svg" width="62" height="62" viewBox="0 0 24 24" fill="none"
@@ -23,8 +57,8 @@
   </div>
 } @else {
   <div class="photo-grid">
-    @for (photo of photoService.photos(); track photo.id) {
-      <div class="photo-cell">
+    @for (photo of photoService.photos(); track photo.id; let i = $index) {
+      <div class="photo-cell" (click)="openPhoto(i)">
         <img [src]="photo.dataUrl" [alt]="photo.name" loading="lazy" />
       </div>
     }
