@@ -7,15 +7,15 @@
 }
 
 /* ═══════════════════════════════════════════
-   DARKROOM  (default)
-   Caldi near-black, ambra, feel da camera oscura
+   DARKROOM  (default — tema scuro)
+   Caldi near-black, accento ambra
    ═══════════════════════════════════════════ */
 :root {
   --bg:              #110d0a;
   --surface:         #1a1410;
   --surface-empty:   #140f0c;
   --surface-drop:    #261b12;
-  --mat:             #261b12;       /* colore cornice mat attorno alle foto */
+  --mat:             #261b12;
   --border:          rgba(196, 112, 58, 0.12);
   --border-focus:    rgba(196, 112, 58, 0.7);
   --text:            #e0d5c3;
@@ -27,7 +27,7 @@
   --nav-blur:        none;
   --cell-radius:     0px;
   --cell-gap:        3px;
-  --cell-mat:        4px;          /* padding del "mat" fotografico */
+  --cell-mat:        4px;
   --font-ui:         -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --btn-hover:       rgba(196, 112, 58, 0.1);
   --input-bg:        #1a1410;
@@ -41,20 +41,18 @@
   --logo-bot-size:   22px;
   --logo-bot-weight: 800;
   --logo-bot-color:  #c4703a;
-  --glow-text:       none;
-  --glow-border:     none;
 }
 
 /* ═══════════════════════════════════════════
-   GALERIE  (modern) — tema chiaro
-   Stampe fotografiche su tavolo, luce di galleria
+   GALERIE  (modern — tema chiaro)
+   Crema calda, stampe su tavolo illuminato
    ═══════════════════════════════════════════ */
 [data-theme='modern'] {
   --bg:              #f0ece5;
   --surface:         #e6e0d8;
   --surface-empty:   #ebe6de;
   --surface-drop:    rgba(26, 22, 18, 0.05);
-  --mat:             #d8d0c4;       /* cornice mat chiara */
+  --mat:             #d8d0c4;
   --border:          rgba(26, 22, 18, 0.1);
   --border-focus:    rgba(26, 22, 18, 0.5);
   --text:            #1a1612;
@@ -80,61 +78,10 @@
   --logo-bot-size:   20px;
   --logo-bot-weight: 300;
   --logo-bot-color:  #1a1612;
-  --glow-text:       none;
-  --glow-border:     none;
-}
-
-/* ═══════════════════════════════════════════
-   TERMINAL  (retro) — fosfori verdi
-   ═══════════════════════════════════════════ */
-[data-theme='retro'] {
-  --bg:              #000900;
-  --surface:         #000e00;
-  --surface-empty:   #000600;
-  --surface-drop:    rgba(0, 255, 65, 0.06);
-  --mat:             #000900;
-  --border:          rgba(0, 255, 65, 0.18);
-  --border-focus:    rgba(0, 255, 65, 0.75);
-  --text:            #00ff41;
-  --text-muted:      #007f20;
-  --accent:          #00ff41;
-  --error:           #ff4444;
-  --nav-bg:          #000900;
-  --nav-border:      rgba(0, 255, 65, 0.35);
-  --nav-blur:        none;
-  --cell-radius:     0px;
-  --cell-gap:        2px;
-  --cell-mat:        0px;          /* no mat nel tema terminale */
-  --font-ui:         'VT323', 'Courier New', monospace;
-  --btn-hover:       rgba(0, 255, 65, 0.1);
-  --input-bg:        #000900;
-  --input-border:    rgba(0, 255, 65, 0.25);
-  --input-focus:     rgba(0, 255, 65, 0.6);
-  --submit-bg:       transparent;
-  --submit-text:     #00ff41;
-  --submit-hover:    rgba(0, 255, 65, 0.1);
-  --logo-top-size:   0px;          /* nascosto in retro (inline logo) */
-  --logo-top-color:  #00ff41;
-  --logo-bot-size:   20px;
-  --logo-bot-weight: 400;
-  --logo-bot-color:  #00ff41;
-  --glow-text:       0 0 6px currentColor;
-  --glow-border:     0 0 8px rgba(0, 255, 65, 0.3);
 }
 
 body {
   background: var(--bg);
   font-family: var(--font-ui);
   color: var(--text);
-}
-
-/* ── Animazioni condivise ── */
-@keyframes crt-flicker {
-  0%, 89%, 91%, 100% { opacity: 1; }
-  90%                { opacity: 0.96; }
-}
-
-@keyframes cursor-blink {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0; }
 }

@@ -1,23 +1,27 @@
-import { Component, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
+import { Component, effect, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { BachekaService } from '../../services/bacheca.service';
 import { PhotoService } from '../../services/photo.service';
 import { ThemeService } from '../../services/theme.service';
+import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-photo-grid',
-  imports: [],
+  imports: [RouterLink, FormsModule, DatePipe],
   templateUrl: './photo-grid.html',
   styleUrl: './photo-grid.css',
 })
 export class PhotoGrid {
   protected readonly photoService = inject(PhotoService);
   protected readonly themeService = inject(ThemeService);
-  private readonly auth = inject(AuthService);
+  protected readonly auth = inject(AuthService);
+  protected readonly bachekaService = inject(BachekaService);
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
+  protected readonly route = inject(ActivatedRoute);
   private readonly fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
 
   protected readonly editMode = toSignal(
@@ -25,9 +29,39 @@ export class PhotoGrid {
     { initialValue: false },
   );
 
+  protected readonly routeParamUsername = toSignal(
+    this.route.params.pipe(map(p => p['username'] as string | undefined)),
+    { initialValue: undefined },
+  );
+
+  protected readonly profileUsername = (() => {
+    const editMode = this.editMode;
+    const authCurrentUser = this.auth.currentUser;
+    const routeParam = this.routeParamUsername;
+    return () => (editMode() ? authCurrentUser() : (routeParam() ?? null));
+  })();
+
   protected readonly selectedIndex = signal<number | null>(null);
   protected readonly dragIndex = signal<number | null>(null);
   protected readonly dropTarget = signal<number | null>(null);
+  protected readonly pendingUpload = signal<{ name: string; dataUrl: string } | null>(null);
+  protected readonly bachekaEligible = signal<boolean>(true);
+  protected readonly uploadResult = signal<'published' | 'queued' | null>(null);
+
+  // Two-way binding helper for ngModel
+  protected get bachekaEligibleModel(): boolean {
+    return this.bachekaEligible();
+  }
+  protected set bachekaEligibleModel(v: boolean) {
+    this.bachekaEligible.set(v);
+  }
+
+  constructor() {
+    effect(() => {
+      const u = this.profileUsername();
+      if (u) this.photoService.setUser(u);
+    });
+  }
 
   protected get selectedPhoto() {
     const i = this.selectedIndex();
@@ -60,6 +94,10 @@ export class PhotoGrid {
 
   @HostListener('document:keydown', ['$event'])
   onKey(e: KeyboardEvent): void {
+    if (this.pendingUpload() !== null) {
+      if (e.key === 'Escape') this.cancelUpload();
+      return;
+    }
     if (this.selectedIndex() === null) return;
     if (e.key === 'Escape') this.closePhoto();
     if (e.key === 'ArrowRight') this.navigate(1);
@@ -67,7 +105,7 @@ export class PhotoGrid {
   }
 
   goToLogin(): void {
-    this.router.navigateByUrl('/login');
+    this.router.navigate(['/login']);
   }
 
   logout(): void {
@@ -119,8 +157,43 @@ export class PhotoGrid {
     if (!input.files?.length) return;
     const file = input.files[0];
     const reader = new FileReader();
-    reader.onload = () => this.photoService.add(file.name, reader.result as string);
+    reader.onload = () => {
+      this.pendingUpload.set({ name: file.name, dataUrl: reader.result as string });
+      this.bachekaEligible.set(true);
+      this.uploadResult.set(null);
+    };
     reader.readAsDataURL(file);
     input.value = '';
+  }
+
+  confirmUpload(): void {
+    const pending = this.pendingUpload();
+    if (!pending) return;
+    const eligible = this.bachekaEligible();
+    this.photoService.add(pending.name, pending.dataUrl, eligible);
+    const addedPhoto = this.photoService.getLastAddedPhoto();
+    if (eligible && addedPhoto) {
+      const result = this.bachekaService.submitPhoto(addedPhoto);
+      this.uploadResult.set(result);
+    } else {
+      this.uploadResult.set(null);
+    }
+    this.pendingUpload.set(null);
+    // Clear result after 4 seconds
+    setTimeout(() => this.uploadResult.set(null), 4000);
+  }
+
+  cancelUpload(): void {
+    this.pendingUpload.set(null);
+  }
+
+  getPendingCount(): number {
+    const u = this.auth.currentUser();
+    return u ? this.bachekaService.pendingCountForUser(u) : 0;
+  }
+
+  getNextPublishTime(): Date | null {
+    const u = this.auth.currentUser();
+    return u ? this.bachekaService.nextPublishTimeForUser(u) : null;
   }
 }

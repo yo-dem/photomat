@@ -2,33 +2,42 @@ import { Injectable } from '@angular/core';
 import { Photo } from '../models/photo.model';
 import { PhotoStorageAdapter } from './photo-storage.adapter';
 
-const STORAGE_KEY = 'photomat_photos';
-const LAYOUT_KEY = 'photomat_layout';
-
 @Injectable()
 export class LocalStoragePhotoAdapter extends PhotoStorageAdapter {
-  getAll(): Photo[] {
-    const raw = localStorage.getItem(STORAGE_KEY);
+  private photosKey(username: string): string {
+    return `photomat_photos_${username}`;
+  }
+
+  private layoutKey(username: string): string {
+    return `photomat_layout_${username}`;
+  }
+
+  getAll(username: string): Photo[] {
+    const raw = localStorage.getItem(this.photosKey(username));
     return raw ? (JSON.parse(raw) as Photo[]) : [];
   }
 
-  save(photo: Photo): void {
-    const photos = this.getAll();
+  save(username: string, photo: Photo): void {
+    const photos = this.getAll(username);
     photos.push(photo);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
+    localStorage.setItem(this.photosKey(username), JSON.stringify(photos));
   }
 
-  delete(id: string): void {
-    const photos = this.getAll().filter(p => p.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
+  delete(username: string, id: string): void {
+    const photos = this.getAll(username).filter(p => p.id !== id);
+    localStorage.setItem(this.photosKey(username), JSON.stringify(photos));
   }
 
-  getLayout(): (string | null)[] {
-    const raw = localStorage.getItem(LAYOUT_KEY);
+  getLayout(username: string): (string | null)[] {
+    const raw = localStorage.getItem(this.layoutKey(username));
     return raw ? (JSON.parse(raw) as (string | null)[]) : [];
   }
 
-  saveLayout(layout: (string | null)[]): void {
-    localStorage.setItem(LAYOUT_KEY, JSON.stringify(layout));
+  saveLayout(username: string, layout: (string | null)[]): void {
+    localStorage.setItem(this.layoutKey(username), JSON.stringify(layout));
+  }
+
+  getById(username: string, photoId: string): Photo | null {
+    return this.getAll(username).find(p => p.id === photoId) ?? null;
   }
 }

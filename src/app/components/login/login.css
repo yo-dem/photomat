@@ -18,8 +18,6 @@
   padding: 56px 52px;
   background: var(--surface);
   border-right: 1px solid var(--border);
-  position: relative;
-  overflow: hidden;
 }
 
 .brand-wordmark {
@@ -48,12 +46,21 @@
   font-family: var(--font-ui);
 }
 
+[data-theme='modern'] .brand-bot {
+  font-weight: 800;
+  color: var(--text);
+}
+
 .brand-rule {
   width: 40px;
   height: 2px;
   background: var(--accent);
   margin: 28px 0;
-  opacity: 0.6;
+  opacity: 0.5;
+}
+
+[data-theme='modern'] .brand-rule {
+  background: var(--text-muted);
 }
 
 .brand-tagline {
@@ -78,7 +85,7 @@
   max-width: 340px;
 }
 
-/* Pulsante tema nell'angolo in alto a destra */
+/* Pulsante tema (angolo in alto a destra del pannello form) */
 .theme-toggle {
   position: absolute;
   top: 20px;
@@ -94,6 +101,7 @@
   justify-content: center;
   transition: background 0.15s, color 0.15s;
 }
+
 .theme-toggle:hover {
   background: var(--btn-hover);
   color: var(--text);
@@ -117,7 +125,7 @@
   margin-bottom: 36px;
 }
 
-/* ── Campi form ── */
+/* ── Campi ── */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -151,10 +159,11 @@
   font-family: var(--font-ui);
   width: 100%;
 }
+
 .field input:focus {
   border-color: var(--input-focus);
-  box-shadow: 0 0 0 3px rgba(from var(--input-focus) r g b / 0.12);
 }
+
 .field input:disabled {
   opacity: 0.5;
 }
@@ -188,10 +197,12 @@
   min-height: 46px;
   width: 100%;
 }
+
 .submit-btn:disabled {
   opacity: 0.55;
   cursor: default;
 }
+
 .submit-btn:not(:disabled):hover {
   background: var(--submit-hover);
 }
@@ -205,145 +216,18 @@
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
+
+[data-theme='modern'] .spinner {
+  border-color: rgba(0, 0, 0, 0.12);
+  border-top-color: currentColor;
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
 /* ══════════════════════════════════════════════
-   MODERN — tema chiaro, spinner dark
-   ══════════════════════════════════════════════ */
-[data-theme='modern'] .spinner {
-  border-color: rgba(0, 0, 0, 0.15);
-  border-top-color: var(--submit-text);
-}
-
-[data-theme='modern'] .brand-panel {
-  background: var(--bg);
-  border-right-color: var(--border);
-}
-
-/* ══════════════════════════════════════════════
-   RETRO — collassa a colonna singola, stile terminale
-   ══════════════════════════════════════════════ */
-[data-theme='retro'] .login-page {
-  grid-template-columns: 1fr;
-  align-items: start;
-  background-image: repeating-linear-gradient(
-    0deg,
-    transparent 0px, transparent 3px,
-    rgba(0, 0, 0, 0.14) 3px, rgba(0, 0, 0, 0.14) 4px
-  );
-  animation: crt-flicker 10s step-end infinite;
-}
-
-[data-theme='retro'] .brand-panel {
-  border-right: none;
-  border-bottom: 1px solid var(--border);
-  padding: 40px 40px 32px;
-  background: var(--bg);
-  justify-content: flex-start;
-}
-
-[data-theme='retro'] .brand-top {
-  display: none;
-}
-
-[data-theme='retro'] .brand-bot {
-  font-size: 42px;
-  letter-spacing: 6px;
-  font-weight: 400;
-  color: var(--text);
-  text-shadow: var(--glow-text), 0 0 20px rgba(0, 255, 65, 0.3);
-  font-family: var(--font-ui);
-}
-
-[data-theme='retro'] .brand-bot::after {
-  content: ' █';
-  animation: cursor-blink 1.1s step-end infinite;
-}
-
-[data-theme='retro'] .brand-rule {
-  background: var(--text);
-  box-shadow: var(--glow-border);
-}
-
-[data-theme='retro'] .brand-tagline {
-  text-shadow: var(--glow-text);
-}
-
-[data-theme='retro'] .form-panel {
-  padding: 40px;
-  justify-content: flex-start;
-  align-items: flex-start;
-}
-
-[data-theme='retro'] .form-inner {
-  max-width: 100%;
-}
-
-[data-theme='retro'] .form-heading {
-  font-size: 22px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  text-shadow: var(--glow-text);
-}
-
-[data-theme='retro'] .form-heading::before {
-  content: '> ';
-  opacity: 0.6;
-}
-
-[data-theme='retro'] .form-sub {
-  text-shadow: var(--glow-text);
-  opacity: 0.7;
-}
-
-[data-theme='retro'] .field label::before {
-  content: '// ';
-  opacity: 0.5;
-}
-
-[data-theme='retro'] .field input {
-  border-radius: 0;
-  font-size: 18px;
-  caret-color: var(--text);
-}
-[data-theme='retro'] .field input:focus {
-  box-shadow: 0 0 8px rgba(0, 255, 65, 0.2);
-}
-
-[data-theme='retro'] .error-msg::before {
-  content: '! ERR: ';
-}
-[data-theme='retro'] .error-msg {
-  text-shadow: 0 0 6px var(--error);
-  font-size: 18px;
-}
-
-[data-theme='retro'] .submit-btn {
-  border-radius: 0;
-  border: 1px solid var(--text);
-  font-size: 16px;
-  letter-spacing: 0.2em;
-  box-shadow: var(--glow-border);
-  text-shadow: var(--glow-text);
-}
-[data-theme='retro'] .submit-btn:not(:disabled):hover {
-  background: rgba(0, 255, 65, 0.1);
-}
-
-[data-theme='retro'] .theme-toggle {
-  border-radius: 0;
-  text-shadow: var(--glow-text);
-}
-
-[data-theme='retro'] .spinner {
-  border-color: rgba(0, 255, 65, 0.2);
-  border-top-color: var(--text);
-}
-
-/* ══════════════════════════════════════════════
-   RESPONSIVE — sotto 640px stack verticale
+   RESPONSIVE — sotto 640px pannelli in colonna
    ══════════════════════════════════════════════ */
 @media (max-width: 640px) {
   .login-page {

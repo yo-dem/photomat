@@ -5,8 +5,10 @@ import { PhotoStorageAdapter } from '../storage/photo-storage.adapter';
 @Injectable({ providedIn: 'root' })
 export class PhotoService {
   private readonly storage = inject(PhotoStorageAdapter);
-  readonly photos = signal<Photo[]>(this.storage.getAll());
-  readonly layout = signal<(string | null)[]>(this.storage.getLayout());
+
+  readonly currentUsername = signal<string | null>(null);
+  readonly photos = signal<Photo[]>([]);
+  readonly layout = signal<(string | null)[]>([]);
 
   readonly displaySlots = computed<(Photo | null)[]>(() => {
     const layout = this.layout();
@@ -29,9 +31,24 @@ export class PhotoService {
     });
   });
 
-  add(name: string, dataUrl: string): void {
-    const photo: Photo = { id: crypto.randomUUID(), name, dataUrl, createdAt: Date.now() };
-    this.storage.save(photo);
+  setUser(username: string): void {
+    this.currentUsername.set(username);
+    this.photos.set(this.storage.getAll(username));
+    this.layout.set(this.storage.getLayout(username));
+  }
+
+  add(name: string, dataUrl: string, bachekaEligible: boolean): void {
+    const username = this.currentUsername();
+    if (!username) return;
+    const photo: Photo = {
+      id: crypto.randomUUID(),
+      name,
+      dataUrl,
+      createdAt: Date.now(),
+      owner: username,
+      bachekaEligible,
+    };
+    this.storage.save(username, photo);
     this.photos.update(list => [...list, photo]);
 
     const layout = this.layout();
@@ -42,25 +59,34 @@ export class PhotoService {
     } else {
       copy.push(photo.id);
     }
-    this.storage.saveLayout(copy);
+    this.storage.saveLayout(username, copy);
     this.layout.set(copy);
   }
 
   remove(id: string): void {
-    this.storage.delete(id);
+    const username = this.currentUsername();
+    if (!username) return;
+    this.storage.delete(username, id);
     this.photos.update(list => list.filter(p => p.id !== id));
 
     const copy = this.layout().map(slotId => (slotId === id ? null : slotId));
-    this.storage.saveLayout(copy);
+    this.storage.saveLayout(username, copy);
     this.layout.set(copy);
   }
 
   movePhoto(fromSlot: number, toSlot: number): void {
+    const username = this.currentUsername();
+    if (!username) return;
     const copy = [...this.layout()];
     const maxIdx = Math.max(fromSlot, toSlot);
     while (copy.length <= maxIdx) copy.push(null);
     [copy[fromSlot], copy[toSlot]] = [copy[toSlot], copy[fromSlot]];
-    this.storage.saveLayout(copy);
+    this.storage.saveLayout(username, copy);
     this.layout.set(copy);
+  }
+
+  getLastAddedPhoto(): Photo | null {
+    const photos = this.photos();
+    return photos.length > 0 ? photos[photos.length - 1] : null;
   }
 }

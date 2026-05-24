@@ -24,7 +24,7 @@ export class Login {
   constructor() {
     // Se già autenticato, non mostrare il login
     if (this.auth.isAuthenticated()) {
-      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/admin';
+      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/me';
       this.router.navigateByUrl(returnUrl);
     }
   }
@@ -36,7 +36,7 @@ export class Login {
 
     this.auth.login(this.username(), this.password()).subscribe({
       next: () => {
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/admin';
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/me';
         this.router.navigateByUrl(returnUrl);
       },
       error: (err: Error) => {

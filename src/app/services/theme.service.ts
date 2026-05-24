@@ -1,9 +1,9 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
-export type Theme = 'default' | 'modern' | 'retro';
+export type Theme = 'default' | 'modern';
 
-const THEMES: Theme[] = ['default', 'modern', 'retro'];
+const THEMES: Theme[] = ['default', 'modern'];
 const STORAGE_KEY = 'photomat_theme';
 
 @Injectable({ providedIn: 'root' })
@@ -28,6 +28,6 @@ export class ThemeService {
 
   private loadSaved(): Theme {
     const saved = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    return THEMES.includes(saved!) ? saved! : 'default';
+    return THEMES.includes(saved!) ? saved! : 'modern'; // parte col tema chiaro
   }
 }
