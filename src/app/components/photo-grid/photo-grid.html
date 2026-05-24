@@ -57,9 +57,22 @@
   </div>
 } @else {
   <div class="photo-grid">
-    @for (photo of photoService.photos(); track photo.id; let i = $index) {
-      <div class="photo-cell" (click)="openPhoto(i)">
-        <img [src]="photo.dataUrl" [alt]="photo.name" loading="lazy" />
+    @for (slot of photoService.displaySlots(); track $index; let i = $index) {
+      <div
+        class="photo-cell"
+        [class.has-photo]="slot !== null"
+        [class.is-dragging]="dragIndex() === i"
+        [class.drop-target]="dropTarget() === i"
+        [draggable]="slot !== null"
+        (click)="slot !== null && openPhoto(i)"
+        (dragstart)="onDragStart(i, $event)"
+        (dragover)="onDragOver(i, $event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop(i, $event)"
+        (dragend)="onDragEnd()">
+        @if (slot) {
+          <img [src]="slot.dataUrl" [alt]="slot.name" loading="lazy" draggable="false" />
+        }
       </div>
     }
   </div>

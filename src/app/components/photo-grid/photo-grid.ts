@@ -12,14 +12,18 @@ export class PhotoGrid {
   private readonly fileInput = viewChild.required<ElementRef<HTMLInputElement>>('fileInput');
 
   protected readonly selectedIndex = signal<number | null>(null);
+  protected readonly dragIndex = signal<number | null>(null);
+  protected readonly dropTarget = signal<number | null>(null);
 
   protected get selectedPhoto() {
     const i = this.selectedIndex();
-    return i !== null ? this.photoService.photos()[i] : null;
+    return i !== null ? (this.photoService.displaySlots()[i] ?? null) : null;
   }
 
-  openPhoto(index: number): void {
-    this.selectedIndex.set(index);
+  openPhoto(slotIndex: number): void {
+    if (this.photoService.displaySlots()[slotIndex]) {
+      this.selectedIndex.set(slotIndex);
+    }
   }
 
   closePhoto(): void {
@@ -27,10 +31,17 @@ export class PhotoGrid {
   }
 
   navigate(delta: 1 | -1): void {
-    const i = this.selectedIndex();
-    if (i === null) return;
-    const count = this.photoService.photos().length;
-    this.selectedIndex.set((i + delta + count) % count);
+    const slots = this.photoService.displaySlots();
+    const current = this.selectedIndex();
+    if (current === null) return;
+    const count = slots.length;
+    for (let step = 1; step < count; step++) {
+      const next = ((current + delta * step) + count) % count;
+      if (slots[next] !== null) {
+        this.selectedIndex.set(next);
+        return;
+      }
+    }
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -39,6 +50,41 @@ export class PhotoGrid {
     if (e.key === 'Escape') this.closePhoto();
     if (e.key === 'ArrowRight') this.navigate(1);
     if (e.key === 'ArrowLeft') this.navigate(-1);
+  }
+
+  onDragStart(index: number, event: DragEvent): void {
+    if (!this.photoService.displaySlots()[index]) return;
+    this.dragIndex.set(index);
+    event.dataTransfer!.effectAllowed = 'move';
+  }
+
+  onDragOver(index: number, event: DragEvent): void {
+    event.preventDefault();
+    event.dataTransfer!.dropEffect = 'move';
+    this.dropTarget.set(this.dragIndex() !== index ? index : null);
+  }
+
+  onDragLeave(event: DragEvent): void {
+    const cell = event.currentTarget as HTMLElement;
+    const related = event.relatedTarget as Node | null;
+    if (!related || !cell.contains(related)) {
+      this.dropTarget.set(null);
+    }
+  }
+
+  onDrop(toIndex: number, event: DragEvent): void {
+    event.preventDefault();
+    const from = this.dragIndex();
+    if (from !== null && from !== toIndex) {
+      this.photoService.movePhoto(from, toIndex);
+    }
+    this.dragIndex.set(null);
+    this.dropTarget.set(null);
+  }
+
+  onDragEnd(): void {
+    this.dragIndex.set(null);
+    this.dropTarget.set(null);
   }
 
   triggerUpload(): void {
