@@ -13,13 +13,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0px;
   height: 44px;
   background: #000;
   border-bottom: 1px solid #262626;
 }
 
 .logo {
+  margin-left: 10px;
   font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.5px;
@@ -34,12 +35,13 @@
   border: none;
   color: #fff;
   cursor: pointer;
-  padding: 6px;
+  padding: 0px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
   transition: background 0.15s;
+  margin-right: 10px;
 }
 
 .upload-btn:hover {
